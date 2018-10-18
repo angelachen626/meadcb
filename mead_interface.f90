@@ -123,33 +123,6 @@ function execute(block,config) result(status)
 !        status = status + datablock_get(block, cosmo, "sigma_8", sig8)
 !        WRITE (*,*) 'cosmosis linear sigma8', sig8 
  
-
-
- 
-! doing the job of assign_HM_cosmology
- 
-    cosi%om_m=om_m !The halo modelling in this version knows about neutrino
-    cosi%om_v=om_v
-    cosi%f_nu=om_nu/cosi%om_m
-    cosi%Tcmb=t_cmb
-    cosi%h=h
-    cosi%w=w
-    cosi%ns=n_s
-    cosi%wa = wa
-    cosi%Nnu=massive_nu
-    !testing massive_nu effect
-
-    cosi%eta_baryon = halo_eta0
-    cosi%A_baryon = halo_as
-    cosi%nk = settings%nk
-
-    !Fill growth function table (only needs to be done once)
-    CALL fill_growtab(cosi)
-    !getting linear growth
-    
-    !And get the cosmo power spectrum, again as double precision
-    !Also the P is 2D as we get z also
-
 	status = status + datablock_get_double_grid(block, linear_power, &
         "k_h", k_in, "z", z_in, "p_k", p_in)
 
@@ -176,6 +149,32 @@ function execute(block,config) result(status)
 	!Copy in P(k) from the right part of P(k,z)
         nk = size(k_in)
         nz = size(z_in)
+
+ 
+! doing the job of assign_HM_cosmology
+ 
+        cosi%om_m=om_m !The halo modelling in this version knows about neutrino
+        cosi%om_v=om_v
+        cosi%f_nu=om_nu/cosi%om_m
+        cosi%Tcmb=t_cmb
+        cosi%h=h
+        cosi%w=w
+        cosi%ns=n_s
+        cosi%wa = wa
+        cosi%Nnu=massive_nu
+        !testing massive_nu effect
+
+        cosi%eta_baryon = halo_eta0
+        cosi%A_baryon = halo_as
+        cosi%nk =nk
+
+    !Fill growth function table (only needs to be done once)
+        CALL fill_growtab(cosi)
+    !getting linear growth
+    
+    !And get the cosmo power spectrum, again as double precision
+    !Also the P is 2D as we get z also
+
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ALLOCATE(k(size(k_in)))
         ALLOCATE(ztab(size(z_in)))
